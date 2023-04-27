@@ -2,25 +2,33 @@
     <head>
         <title>MVLA Email Signature Generator</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <style>
+            body {font-family: Arial, Helvetica, sans-serif;}
+            label {width: 250px; display: block;}
+            .input {width: 250px;}
+        </style>
     </head>
     <body>
+        <h2>Step 1: Fill out the form below</h2>
         <form id="card">
             <p><label>Name:</label><input id="form_name" class="input" type="text"></p>
             <p><label>Job Title:</label><input id="form_jobtitle" class="input" type="text"></p>
-            <p><label>Office Phone:</label><input id="form_phoneoffice" class="input" type="text" maxlength="10"></p>
-            <p><label>Cell Phone:</label><input id="form_phonecell" class="input" type="text" maxlength="10"></p>
+            <p><label>Office Phone: <i>(numbers only)</i></label><input id="form_phoneoffice" class="input" type="text" maxlength="10"></p>
+            <p><label>Cell Phone: <i>(numbers only)</i></label><input id="form_phonecell" class="input" type="text" maxlength="10"></p>
             <p><label>Email:</label><input id="form_email" class="input" type="text"></p>   
         </form>
+        <p>&nbsp;</p>
+        <h2>Step 2: Copy your signature block</h2>
         <p>Select and copy the block below into your email client.</p>
         <hr>
         <p>&nbsp;</p>
         <p style="font-family:'Times New Roman', Times, serif"><b style="font-size: 18px;"><span id="card_name">Matt Briney</span></b><br>
         <span id="card_jobtitle" style="font-size: 14px;">Vice President, Media & Communications</span><br>
         <hr style="width:250px" align="left">
-        <span style="font-size: 18px;"><b>George Washington's Mount Vernon</b></span><br>
-        <span style="font-size: 16px;"><i>The Mount Vernon Ladies' Association</i></span><br><br>
-        <span style="font-size: 13px;">P.O. Box 110, Mount Vernon, Virginia 22121<br>
-        O: <span id="card_phoneoffice">(703) 799-6852</span><br> 
+        <span style="font-size: 18px;font-family:'Times New Roman', Times, serif;"><b>George Washington's Mount Vernon</b></span><br>
+        <span style="font-size: 16px;font-family:'Times New Roman', Times, serif;"><i>The Mount Vernon Ladies' Association</i></span><br><br>
+        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">P.O. Box 110, Mount Vernon, Virginia 22121<br>
+        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">O: <span id="card_phoneoffice">(703) 799-6852</span><br> 
         C: <span id="card_phonecell">(703) 608-3413</span><br> 
         <a id="card_email" href="mailto:info@mountvernon.org">mbriney@mountvernon.org</a><br> 
         <a href="http://www.mountvernon.org/">mountvernon.org</a> | @mountvernon</span></p>               

@@ -5,12 +5,21 @@
         <style>
             body {font-family: Arial, Helvetica, sans-serif;}
             label {width: 250px; display: block;}
-            .input {width: 250px;}
+            .input {width: 250px; padding: 5px; margin-top: 2px;}
         </style>
     </head>
     <body>
         <h2>Step 1: Fill out the form below</h2>
         <form id="card">
+            <p><label>Type of Card:</label>
+                <select id="form_type" class="input" type="text">
+                    <option value="gwmv" selected>MVLA Employee</option>
+                    <option value="library">Library Employee</option>
+                    <option value="mvla">MVLA Board</option>
+                    <option value="retail">Retail Employee</option>
+                    <option value="inn">Inn Employee</option>
+                </select>
+            </p>
             <p><label>Name:</label><input id="form_name" class="input" type="text"></p>
             <p><label>Job Title:</label><input id="form_jobtitle" class="input" type="text"></p>
             <p><label>Office Phone: <i>(numbers only)</i></label><input id="form_phoneoffice" class="input" type="text" maxlength="10"></p>
@@ -22,14 +31,15 @@
         <p>Select and copy the block below into your email client.</p>
         <hr>
         <p>&nbsp;</p>
-        <p style="font-family:'Times New Roman', Times, serif"><b style="font-size: 18px;"><span id="card_name">Matt Briney</span></b><br>
+        <img id="card_seal" src="https://mtv-main-assets.s3.amazonaws.com/files/mvla-emailsig-seal.png" style="float: left;"><p style="font-family:'Times New Roman', Times, serif"><b style="font-size: 18px;"><span id="card_name">Matt Briney</span></b><br>
         <span id="card_jobtitle" style="font-size: 14px;">Vice President, Media & Communications</span><br>
+        <span id="card_department" style="font-size: 14px;">Department<br></span>
         <hr style="width:250px" align="left">
-        <span style="font-size: 18px;font-family:'Times New Roman', Times, serif;"><b>George Washington's Mount Vernon</b></span><br>
+        <span id="card_gwmv" style="font-size: 18px;font-family:'Times New Roman', Times, serif;"><b>George Washington's Mount Vernon</b><br></span>
         <span style="font-size: 16px;font-family:'Times New Roman', Times, serif;"><i>The Mount Vernon Ladies' Association</i></span><br><br>
         <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">P.O. Box 110, Mount Vernon, Virginia 22121<br>
-        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">O: <span id="card_phoneoffice">(703) 799-6852</span><br> 
-        C: <span id="card_phonecell">(703) 608-3413</span><br> 
+        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">O: <span id="card_phoneoffice">703-799-6852</span><br> 
+        C: <span id="card_phonecell">703-608-3413</span><br> 
         <a id="card_email" href="mailto:info@mountvernon.org">mbriney@mountvernon.org</a><br> 
         <a href="http://www.mountvernon.org/">mountvernon.org</a> | @mountvernon</span></p>               
 
@@ -40,6 +50,41 @@
                     return input.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
                 }
             };
+            jQuery("#card_department").hide();
+            jQuery("#card_seal").hide();
+            jQuery("#form_type").change(function(){
+                if (this.value == "mvla"){
+                    $("#card_gwmv").hide();
+                    $("#card_seal").show();                    
+                    $("#card_department").hide();
+                }
+                if (this.value == "gwmv"){
+                    $("#card_seal").hide();                    
+                    $("#card_gwmv").show();
+                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
+                    $("#card_department").hide();
+                }                
+                if (this.value == "library"){
+                    $("#card_seal").hide();                    
+                    $("#card_gwmv").show();
+                    $("#card_gwmv").html("<b>The George Washington Presidential Library</b><br>");
+                    $("#card_department").hide();
+                }
+                if (this.value == "inn"){
+                    $("#card_seal").hide();                    
+                    $("#card_gwmv").show();
+                    $("#card_department").show();
+                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
+                    $("#card_department").text("The Mount Vernon Inn Restaurant");
+                }                
+                if (this.value == "retail"){
+                    $("#card_seal").hide();                    
+                    $("#card_gwmv").show();
+                    $("#card_department").show();
+                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
+                    $("#card_department").text("The Shops at Mount Vernon");
+                }
+            });            
             jQuery('.input').keyup(function() {
                 $("#card_name").text($("#form_name").val());
                 $("#card_jobtitle").text($("#form_jobtitle").val());

@@ -1,6 +1,6 @@
 <hmtl>
     <head>
-        <title>MVLA Email Signature Generator</title>
+        <title>TRPLF Email Signature Generator</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <style>
             body {font-family: Arial, Helvetica, sans-serif;}
@@ -11,37 +11,24 @@
     <body>
         <h2>Step 1: Fill out the form below</h2>
         <form id="card">
-            <p><label>Type of Card:</label>
-                <select id="form_type" class="input" type="text">
-                    <option value="gwmv" selected>MVLA Employee</option>
-                    <option value="library">Library Employee</option>
-                    <option value="mvla">MVLA Board</option>
-                    <option value="retail">Retail Employee</option>
-                    <option value="inn">Inn Employee</option>
-                </select>
-            </p>
             <p><label>Name:</label><input id="form_name" class="input" type="text"></p>
             <p><label>Job Title:</label><input id="form_jobtitle" class="input" type="text"></p>
-            <p><label>Office Phone: <i>(numbers only)</i></label><input id="form_phoneoffice" class="input" type="text" maxlength="10"></p>
-            <p><label>Cell Phone: <i>(numbers only)</i></label><input id="form_phonecell" class="input" type="text" maxlength="10"></p>
+            <p><label>Phone: <i>(numbers only)</i></label><input id="form_phonecell" class="input" type="text" maxlength="10"></p>
             <p><label>Email:</label><input id="form_email" class="input" type="text"></p>   
+            <p><label>Meeting Link (optional):</label><input id="form_meeting" class="input" type="text"></p>   
         </form>
         <p>&nbsp;</p>
         <h2>Step 2: Copy your signature block</h2>
         <p>Select and copy the block below into your email client.</p>
         <hr>
         <p>&nbsp;</p>
-        <img id="card_seal" src="https://mtv-main-assets.s3.amazonaws.com/files/mvla-emailsig-seal.png" style="float: left;"><p style="font-family:'Times New Roman', Times, serif"><b style="font-size: 18px;"><span id="card_name">Matt Briney</span></b><br>
-        <span id="card_jobtitle" style="font-size: 14px;">Vice President, Media & Communications</span><br>
-        <span id="card_department" style="font-size: 14px;">Department<br></span>
-        <hr style="width:250px" align="left">
-        <span id="card_gwmv" style="font-size: 18px;font-family:'Times New Roman', Times, serif;"><b>George Washington's Mount Vernon</b><br></span>
-        <span style="font-size: 16px;font-family:'Times New Roman', Times, serif;"><i>The Mount Vernon Ladies' Association</i></span><br><br>
-        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">P.O. Box 110, Mount Vernon, Virginia 22121<br>
-        <span style="font-size: 13px;font-family:'Times New Roman', Times, serif;">O: <span id="card_phoneoffice">703-799-6852</span> |  
-        C: <span id="card_phonecell">703-608-3413</span><br> 
-        <a id="card_email" href="mailto:info@mountvernon.org">mbriney@mountvernon.org</a><br> 
-        <a href="http://www.mountvernon.org/">mountvernon.org</a> | @mountvernon</span></p>               
+        <img id="card_seal" src="https://images.squarespace-cdn.com/content/65aeca2dd36eb03cc1110bce/11f8f552-1d8a-43c8-abcd-91c6fb1db328/trplf-email-sig.png?content-type=image%2Fpng" style="float: left;padding-right: 10px; padding-bottom: 90px;">
+        <p style="font-family:Georgia, Garamond, 'Times New Roman', Times, serif"><b style="font-size: 13px;"><span id="card_name">Name</span></b><br>
+        <span id="card_jobtitle" style="font-size: 13px;line-height: 1.6;">Job</span><br>
+        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;">Phone: <span id="card_phonecell">Phone</span><br> 
+        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;">Email: <span id="card_email">me@trlibrary.com</span><br> 
+        <span id="card_meeting" style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;"><a id="card_meeting_url" href="http://trlibrary.org/">Schedule a Meeting</a><br></span> 
+        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif; line-height: 1.6;"><a href="http://trlibrary.org/">Get in the Arena</a></span></p>               
 
 
         <script type="text/javascript">
@@ -50,48 +37,18 @@
                     return input.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
                 }
             };
-            jQuery("#card_department").hide();
-            jQuery("#card_seal").hide();
-            jQuery("#form_type").change(function(){
-                if (this.value == "mvla"){
-                    $("#card_gwmv").hide();
-                    $("#card_seal").show();                    
-                    $("#card_department").hide();
-                }
-                if (this.value == "gwmv"){
-                    $("#card_seal").hide();                    
-                    $("#card_gwmv").show();
-                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
-                    $("#card_department").hide();
-                }                
-                if (this.value == "library"){
-                    $("#card_seal").hide();                    
-                    $("#card_gwmv").show();
-                    $("#card_gwmv").html("<b>The George Washington Presidential Library</b><br>");
-                    $("#card_department").hide();
-                }
-                if (this.value == "inn"){
-                    $("#card_seal").hide();                    
-                    $("#card_gwmv").show();
-                    $("#card_department").show();
-                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
-                    $("#card_department").text("The Mount Vernon Inn Restaurant");
-                }                
-                if (this.value == "retail"){
-                    $("#card_seal").hide();                    
-                    $("#card_gwmv").show();
-                    $("#card_department").show();
-                    $("#card_gwmv").html("<b>George Washington's Mount Vernon</b><br>");
-                    $("#card_department").text("The Shops at Mount Vernon");
-                }
-            });            
+            $("#card_meeting").hide();
             jQuery('.input').keyup(function() {
                 $("#card_name").text($("#form_name").val());
+                if ($("#form_meeting").val() == '') {
+                    $("#card_meeting").hide();
+                } else {
+                    $("#card_meeting").show();
+                    $("#card_meeting").attr('href', $("#form_meeting").val() );
+                }
                 $("#card_jobtitle").text($("#form_jobtitle").val());
                 $("#card_email").text($("#form_email").val());
-                $("#card_phoneoffice").text($("#form_phoneoffice").val());
                 $("#card_phonecell").text($("#form_phonecell").val());
-                $("#card_phoneoffice").text(phoneFormat($("#card_phoneoffice").text()));
                 $("#card_phonecell").text(phoneFormat($("#card_phonecell").text()));
                 $("#card_email").attr("href", 'mailto:' + $("#form_email").val());
             });

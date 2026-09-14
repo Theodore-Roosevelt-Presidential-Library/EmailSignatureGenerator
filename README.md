@@ -10,7 +10,7 @@ The signature references the logo by absolute URL (`https://emailsig.labs.trlibr
 
 | Client | Method | Result |
 |---|---|---|
-| New Outlook (Windows/Mac), Outlook on the web, Gmail | **Copy signature** → paste into the signature editor | Linked image ✅ |
+| New Outlook (Windows/Mac), Outlook on the web | **Copy signature** → paste into the signature editor | Linked image ✅ |
 | Classic Outlook (Windows) | **Download .htm** → drop into `%APPDATA%\Microsoft\Signatures` | Linked image ✅ |
 | Classic Outlook (Windows) | Paste | ❌ Outlook re-embeds the image as an attachment — that's why the .htm route exists |
 | Outlook mobile | **Copy plain-text version** | Text only (the app doesn't support images) |

@@ -1,57 +1,400 @@
-<hmtl>
-    <head>
-        <title>TRPLF Email Signature Generator</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-        <style>
-            body {font-family: Arial, Helvetica, sans-serif;}
-            label {width: 250px; display: block;}
-            .input {width: 250px; padding: 5px; margin-top: 2px;}
-        </style>
-    </head>
-    <body>
-        <h2>Step 1: Fill out the form below</h2>
-        <form id="card">
-            <p><label>Name:</label><input id="form_name" class="input" type="text"></p>
-            <p><label>Job Title:</label><input id="form_jobtitle" class="input" type="text"></p>
-            <p><label>Phone: <i>(numbers only)</i></label><input id="form_phonecell" class="input" type="text" maxlength="10"></p>
-            <p><label>Email:</label><input id="form_email" class="input" type="text"></p>   
-            <p><label>Meeting Link (optional):</label><input id="form_meeting" class="input" type="text"></p>   
-        </form>
-        <p>&nbsp;</p>
-        <h2>Step 2: Copy your signature block</h2>
-        <p>Select and copy the block below into your email client.</p>
-        <hr>
-        <p>&nbsp;</p>
-        <p style="font-family:Georgia, Garamond, 'Times New Roman', Times, serif"><img id="card_seal" src="https://raw.githubusercontent.com/Theodore-Roosevelt-Presidential-Library/EmailSignatureGenerator/main/trplf-email-sig.png" width="139" height="82" style="float: left;padding-right: 10px; padding-bottom: 90px;">
-        <b style="font-size: 13px;"><span id="card_name">Name</span></b><br>
-        <span id="card_jobtitle" style="font-size: 13px;line-height: 1.6;">Job</span><br>
-        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;">Phone: <span id="card_phonecell">Phone</span><br> 
-        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;">Email: <span id="card_email">me@trlibrary.com</span><br> 
-        <span id="card_meeting" style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif;"><a style="color: #000" id="card_meeting_url" href="http://trlibrary.org/">Schedule a Meeting</a><br></span> 
-        <span style="font-size: 13px;font-family:Georgia, Garamond, 'Times New Roman', Times, serif; line-height: 1.6;"><a style="color: #000" href="http://trlibrary.org/">Get in the Arena</a> | <a style="color: #000" href="https://linktr.ee/trplf">#trlibrary</a> </span></p>               
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Signature Generator · Theodore Roosevelt Presidential Library</title>
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --night-sky: #092A4D;
+    --dark-forest: #1B4532;
+    --bright-forest: #8FC895;
+    --sand: #D1CCBD;
+    --deep-orange: #E7805D;
+    --ink: #25282A;
+    --muted: #6B6F73;
+    --paper: #F6F4EE;
+    --card: #FFFFFF;
+    --line: #DDD8CC;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.45;
+  }
+  header {
+    background: var(--night-sky);
+    color: #fff;
+    padding: 22px 24px;
+  }
+  header .wrap { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header img { height: 46px; background: #fff; padding: 4px 8px; border-radius: 4px; }
+  header h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: .2px; }
+  header p { margin: 0; font-size: 13px; opacity: .8; }
 
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 28px; align-items: start; }
+  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
 
-        <script type="text/javascript">
-            const phoneFormat = (input) => {
-                if(input.length === 10){
-                    return input.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
-                }
-            };
-            $("#card_meeting").hide();
-            jQuery('.input').keyup(function() {
-                $("#card_name").text($("#form_name").val());
-                if ($("#form_meeting").val() == '') {
-                    $("#card_meeting").hide();
-                } else {
-                    $("#card_meeting").show();
-                    $("#card_meeting").attr('href', $("#form_meeting").val() );
-                }
-                $("#card_jobtitle").text($("#form_jobtitle").val());
-                $("#card_email").text($("#form_email").val());
-                $("#card_phonecell").text($("#form_phonecell").val());
-                $("#card_phonecell").text(phoneFormat($("#card_phonecell").text()));
-                $("#card_email").attr("href", 'mailto:' + $("#form_email").val());
-            });
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .card h2 { font-size: 15px; margin: 0 0 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--dark-forest); }
+  .step { display: inline-block; background: var(--dark-forest); color: #fff; border-radius: 999px; width: 22px; height: 22px; line-height: 22px; text-align: center; font-size: 12px; margin-right: 8px; }
 
-        </script>
-    </body>
+  label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; }
+  label small { font-weight: 400; color: var(--muted); }
+  input {
+    width: 100%; padding: 9px 11px; font: inherit; font-size: 14px;
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink);
+  }
+  input:focus { outline: 2px solid var(--bright-forest); border-color: var(--dark-forest); }
+  .hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+  details { margin-top: 14px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--dark-forest); font-weight: 600; }
+
+  .preview { position: sticky; top: 16px; }
+  .preview-box {
+    border: 1px dashed var(--line); border-radius: 6px; padding: 18px; background: #fff; min-height: 150px; overflow-x: auto;
+  }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  button {
+    font: inherit; font-size: 14px; font-weight: 600; padding: 10px 16px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--dark-forest); background: var(--dark-forest); color: #fff;
+  }
+  button.secondary { background: #fff; color: var(--dark-forest); }
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .status { font-size: 13px; color: var(--dark-forest); margin-top: 10px; min-height: 18px; }
+  .status.err { color: #B23A2A; }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin: 0 0 14px; }
+  .tab { background: none; border: none; color: var(--muted); padding: 8px 12px; border-radius: 6px 6px 0 0; font-weight: 600; font-size: 13px; }
+  .tab[aria-selected="true"] { color: var(--night-sky); background: var(--paper); border: 1px solid var(--line); border-bottom-color: var(--paper); margin-bottom: -1px; }
+  .panel { display: none; font-size: 14px; }
+  .panel[data-active="true"] { display: block; }
+  .panel ol { padding-left: 20px; margin: 8px 0; }
+  .panel li { margin: 6px 0; }
+  .panel code { background: var(--paper); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .note { border-left: 3px solid var(--deep-orange); background: #FFF6F1; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 13px; margin: 12px 0 0; }
+  footer { text-align: center; font-size: 12px; color: var(--muted); padding: 20px; }
+  footer a { color: var(--dark-forest); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <img src="trpl-wordmark.png" alt="Theodore Roosevelt Presidential Library">
+    <div>
+      <h1>Email Signature Generator</h1>
+      <p>Fill in your details, copy, and paste into your email app. Takes about a minute.</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+
+    <section class="card" aria-labelledby="form-h">
+      <h2 id="form-h"><span class="step">1</span>Your details</h2>
+      <form id="form" autocomplete="on" onsubmit="return false">
+        <label for="f-name">Full name</label>
+        <input id="f-name" type="text" placeholder="Theodore Roosevelt" autocomplete="name">
+
+        <label for="f-title">Job title</label>
+        <input id="f-title" type="text" placeholder="Chief Communications and Marketing Officer" autocomplete="organization-title">
+
+        <label for="f-phone">Phone <small>(any format)</small></label>
+        <input id="f-phone" type="tel" placeholder="701-555-0100" autocomplete="tel">
+
+        <label for="f-email">Email</label>
+        <input id="f-email" type="email" placeholder="you@trlibrary.com" autocomplete="email">
+
+        <label for="f-meeting">Meeting link <small>(optional)</small></label>
+        <input id="f-meeting" type="url" placeholder="calendly.com/you or a Bookings link">
+        <p class="hint">Adds a "Schedule a Meeting" line.</p>
+
+        <details>
+          <summary>More options</summary>
+          <label for="f-dept">Department <small>(optional)</small></label>
+          <input id="f-dept" type="text" placeholder="Communications &amp; Marketing">
+          <label for="f-pronouns">Pronouns <small>(optional)</small></label>
+          <input id="f-pronouns" type="text" placeholder="she/her">
+        </details>
+      </form>
+    </section>
+
+    <section class="preview" aria-labelledby="prev-h">
+      <div class="card">
+        <h2 id="prev-h"><span class="step">2</span>Preview &amp; copy</h2>
+        <div class="preview-box" id="preview"></div>
+        <div class="toolbar">
+          <button id="copy" type="button">Copy signature</button>
+          <button id="download" type="button" class="secondary">Download for classic Outlook (.htm)</button>
+          <button id="copytext" type="button" class="secondary">Copy plain-text version</button>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="card" style="margin-top: 20px;" aria-labelledby="inst-h">
+        <h2 id="inst-h"><span class="step">3</span>Add it to your email app</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" data-tab="new" aria-selected="true">New Outlook</button>
+          <button class="tab" role="tab" data-tab="classic" aria-selected="false">Classic Outlook (Windows)</button>
+          <button class="tab" role="tab" data-tab="mac" aria-selected="false">Outlook for Mac</button>
+          <button class="tab" role="tab" data-tab="web" aria-selected="false">Outlook on the web</button>
+          <button class="tab" role="tab" data-tab="mobile" aria-selected="false">Phone</button>
+          <button class="tab" role="tab" data-tab="gmail" aria-selected="false">Gmail</button>
+        </div>
+
+        <div class="panel" data-tab="new" data-active="true">
+          <p>New Outlook (the redesigned app on Windows and Mac, toggle in the top-right corner):</p>
+          <ol>
+            <li>Click <b>Copy signature</b> above.</li>
+            <li>In Outlook, open <b>Settings</b> (gear icon) → <b>Accounts</b> → <b>Signatures</b>.</li>
+            <li>Click <b>+ New signature</b>, give it a name, and paste (<code>Ctrl+V</code> / <code>⌘V</code>) into the editor.</li>
+            <li>Under <b>Select default signatures</b>, choose it for new messages and replies. Click <b>Save</b>.</li>
+          </ol>
+          <p class="note">Not sure which Outlook you have? If there's a "New Outlook" switch in the top-right corner and it's <b>on</b>, you're here. If it's off (or there's no switch and you see a File menu), use the <b>Classic Outlook</b> tab.</p>
+        </div>
+
+        <div class="panel" data-tab="classic">
+          <p>Classic Outlook converts pasted logos into attachments, so don't paste — install the file instead:</p>
+          <ol>
+            <li>Click <b>Download for classic Outlook (.htm)</b> above. Save the file.</li>
+            <li>Open File Explorer, click the address bar, paste <code>%APPDATA%\Microsoft\Signatures</code> and press Enter. (If the folder doesn't exist yet, open Outlook → File → Options → Mail → Signatures once, then try again.)</li>
+            <li>Move the downloaded <code>.htm</code> file into that folder.</li>
+            <li>In Outlook: <b>File → Options → Mail → Signatures…</b>. Your signature appears in the list — select it as the default for new messages and replies. Click <b>OK</b>.</li>
+          </ol>
+          <p class="note">Installed this way, the logo stays a link to the Library's server. Nothing gets attached to your emails.</p>
+        </div>
+
+        <div class="panel" data-tab="mac">
+          <ol>
+            <li>Click <b>Copy signature</b> above.</li>
+            <li>In Outlook, go to <b>Outlook → Settings → Signatures</b>.</li>
+            <li>Click <b>+</b>, name it, paste (<code>⌘V</code>) into the editor, and close the window to save.</li>
+            <li>Under <b>Choose default signature</b>, pick it for new messages and replies.</li>
+          </ol>
+          <p class="note">If your Mac Outlook has a "New Outlook" switch turned on, follow the <b>New Outlook</b> tab instead.</p>
+        </div>
+
+        <div class="panel" data-tab="web">
+          <ol>
+            <li>Click <b>Copy signature</b> above.</li>
+            <li>Go to <a href="https://outlook.office.com/mail/options/mail/messageContent" target="_blank" rel="noopener">outlook.office.com → Settings → Mail → Compose and reply</a>.</li>
+            <li>Click <b>+ New signature</b>, name it, paste into the editor, and click <b>Save</b>.</li>
+            <li>Set it as the default for new messages and replies.</li>
+          </ol>
+        </div>
+
+        <div class="panel" data-tab="mobile">
+          <p>The Outlook mobile app only supports plain-text signatures (no logo or links).</p>
+          <ol>
+            <li>Click <b>Copy plain-text version</b> above and email it to yourself, or type it on your phone.</li>
+            <li>In the Outlook app: profile icon → <b>Settings</b> (gear) → <b>Signature</b>, paste, and save.</li>
+          </ol>
+          <p class="note">Tip: if your organization has roaming signatures turned on in Microsoft 365, the signature you set in New Outlook or Outlook on the web will sync to your phone automatically.</p>
+        </div>
+
+        <div class="panel" data-tab="gmail">
+          <ol>
+            <li>Click <b>Copy signature</b> above.</li>
+            <li>In Gmail: gear icon → <b>See all settings</b> → <b>General</b> → scroll to <b>Signature</b>.</li>
+            <li>Click <b>Create new</b>, name it, paste into the editor.</li>
+            <li>Set the defaults for new emails and replies, then scroll down and click <b>Save Changes</b>.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  Questions or a problem with your signature? Contact the Communications &amp; Marketing team.
+  · <a href="https://github.com/Theodore-Roosevelt-Presidential-Library/EmailSignatureGenerator" target="_blank" rel="noopener">Source</a>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- Configuration -------------------------------------------------------
+  const SITE = 'https://emailsig.labs.trlibrary.com';
+  const LOGO = {
+    src: SITE + '/trpl-wordmark.png',   // 312×187 (2×) served from this site, never embedded
+    width: 156, height: 94,
+    alt: 'Theodore Roosevelt Presidential Library',
+    href: 'https://www.trlibrary.com'
+  };
+  const LINKS = [
+    { label: 'Get in the Arena', href: 'https://www.trlibrary.com' },
+    { label: '#trlibrary', href: 'https://hootbio.com/trlibrary' }
+  ];
+  const COLOR = { name: '#092A4D', text: '#25282A', link: '#1B4532', muted: '#6B6F73' };
+  const FONT = "Georgia, 'Times New Roman', Times, serif";
+
+  // ---- Helpers ---------------------------------------------------------------
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function formatPhone(raw) {
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 10) return digits.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    if (digits.length === 11 && digits[0] === '1') return digits.slice(1).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+    return raw.trim();
+  }
+  function normalizeUrl(u) {
+    u = u.trim();
+    if (!u) return '';
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    return u;
+  }
+
+  function readForm() {
+    return {
+      name: $('f-name').value.trim(),
+      title: $('f-title').value.trim(),
+      phone: formatPhone($('f-phone').value),
+      email: $('f-email').value.trim(),
+      meeting: normalizeUrl($('f-meeting').value),
+      dept: $('f-dept').value.trim(),
+      pronouns: $('f-pronouns').value.trim()
+    };
+  }
+
+  // ---- Signature markup (email-safe: tables + inline styles only) -----------
+  function buildSignature(d) {
+    const line = (html) => `<tr><td style="padding:0;font-family:${FONT};font-size:13px;line-height:20px;color:${COLOR.text};">${html}</td></tr>`;
+    const a = (href, label, extra) => `<a href="${esc(href)}" style="color:${COLOR.link};text-decoration:none;"${extra || ''}>${esc(label)}</a>`;
+
+    let rows = '';
+    // Name (+ pronouns)
+    let nameHtml = `<span style="font-size:15px;font-weight:bold;color:${COLOR.name};">${esc(d.name || 'Your Name')}</span>`;
+    if (d.pronouns) nameHtml += ` <span style="font-size:12px;color:${COLOR.muted};">(${esc(d.pronouns)})</span>`;
+    rows += line(nameHtml);
+    if (d.title) rows += line(esc(d.title));
+    if (d.dept) rows += line(`<span style="color:${COLOR.muted};">${esc(d.dept)}</span>`);
+    if (d.phone) rows += line(`Phone: ${a('tel:' + d.phone.replace(/[^\d+]/g, ''), d.phone)}`);
+    if (d.email) rows += line(`Email: ${a('mailto:' + d.email, d.email)}`);
+    if (d.meeting) rows += line(a(d.meeting, 'Schedule a Meeting'));
+    rows += line(LINKS.map((l) => a(l.href, l.label)).join(' &nbsp;|&nbsp; '));
+
+    return (
+`<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;font-family:${FONT};">
+<tr>
+<td valign="top" style="padding:0 14px 0 0;">
+<a href="${LOGO.href}" style="text-decoration:none;"><img src="${LOGO.src}" width="${LOGO.width}" height="${LOGO.height}" alt="${esc(LOGO.alt)}" style="display:block;border:0;width:${LOGO.width}px;height:${LOGO.height}px;"></a>
+</td>
+<td valign="top" style="padding:0 0 0 14px;border-left:2px solid ${COLOR.name};">
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
+${rows}
+</table>
+</td>
+</tr>
+</table>`
+    );
+  }
+
+  function buildPlainText(d) {
+    const out = [];
+    out.push(d.name + (d.pronouns ? ` (${d.pronouns})` : ''));
+    if (d.title) out.push(d.title);
+    if (d.dept) out.push(d.dept);
+    out.push('Theodore Roosevelt Presidential Library');
+    if (d.phone) out.push('Phone: ' + d.phone);
+    if (d.email) out.push('Email: ' + d.email);
+    if (d.meeting) out.push('Schedule a meeting: ' + d.meeting);
+    out.push(LINKS.map((l) => l.href).join('  |  '));
+    return out.join('\n');
+  }
+
+  function buildHtmFile(d) {
+    return `<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>TRPL Signature</title></head>
+<body>
+${buildSignature(d)}
+</body></html>`;
+  }
+
+  // ---- UI wiring -------------------------------------------------------------
+  const status = $('status');
+  function say(msg, isErr) { status.textContent = msg; status.className = 'status' + (isErr ? ' err' : ''); }
+
+  function render() {
+    const d = readForm();
+    // Preview loads the logo relative to this page so it works before/without DNS; copied output uses the absolute URL.
+    $('preview').innerHTML = buildSignature(d).split(LOGO.src).join('trpl-wordmark.png');
+    const ready = !!d.name;
+    $('copy').disabled = $('download').disabled = $('copytext').disabled = !ready;
+  }
+  document.querySelectorAll('#form input').forEach((el) => el.addEventListener('input', render));
+  render();
+
+  async function copyHtml(html, text) {
+    if (navigator.clipboard && window.ClipboardItem) {
+      const item = new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' })
+      });
+      await navigator.clipboard.write([item]);
+      return;
+    }
+    // Fallback: select the preview and copy
+    const range = document.createRange();
+    range.selectNodeContents($('preview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    const ok = document.execCommand('copy');
+    sel.removeAllRanges();
+    if (!ok) throw new Error('copy failed');
+  }
+
+  $('copy').addEventListener('click', async () => {
+    const d = readForm();
+    try {
+      await copyHtml(buildSignature(d), buildPlainText(d));
+      say('Copied. Now paste it into your email app — see step 3.');
+    } catch (e) {
+      say('Couldn’t copy automatically. Select the preview above, then press Ctrl+C / ⌘C.', true);
+    }
+  });
+
+  $('copytext').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(buildPlainText(readForm()));
+      say('Plain-text signature copied.');
+    } catch (e) {
+      say('Couldn’t copy automatically. Try a different browser.', true);
+    }
+  });
+
+  $('download').addEventListener('click', () => {
+    const d = readForm();
+    const blob = new Blob([buildHtmFile(d)], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safe = (d.name || 'TRPL').replace(/[^\w\- ]/g, '').trim();
+    a.href = url; a.download = `TRPL Signature - ${safe}.htm`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    say('Downloaded. Follow the Classic Outlook steps in step 3.');
+    activate('classic');
+  });
+
+  // Tabs
+  function activate(name) {
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === name)));
+    document.querySelectorAll('.panel').forEach((p) => p.dataset.active = String(p.dataset.tab === name));
+    try { localStorage.setItem('sigtab', name); } catch (e) {}
+  }
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => activate(t.dataset.tab)));
+  try { const saved = localStorage.getItem('sigtab'); if (saved) activate(saved); } catch (e) {}
+})();
+</script>
+</body>
+</html>

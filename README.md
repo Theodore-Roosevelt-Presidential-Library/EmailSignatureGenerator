@@ -13,6 +13,7 @@ The signature references the logo by absolute URL (`https://emailsig.labs.trlibr
 | New Outlook (Windows/Mac), Outlook on the web | **Copy signature** → paste into the signature editor | Linked image ✅ |
 | Classic Outlook (Windows) | **Download .htm** → drop into `%APPDATA%\Microsoft\Signatures` | Linked image ✅ |
 | Classic Outlook (Windows) | Paste | ❌ Outlook re-embeds the image as an attachment — that's why the .htm route exists |
+| Apple Mail (macOS) | **Copy Apple Mail install command** → paste in Terminal | Linked image ✅ — writes the `.mailsignature` file directly and locks it (Mail's editor strips formatting and embeds the image on paste) |
 | Outlook mobile | **Copy plain-text version** | Text only (the app doesn't support images) |
 
 Trade-off: recipients whose client blocks remote images will see a placeholder until they click "download pictures." That's the cost of keeping attachments out of every message.

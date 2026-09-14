@@ -232,15 +232,17 @@
           </ol>
         </div>
         <div class="panel" data-tab="applemail">
+          <p>Apple Mail's signature editor strips the formatting and embeds the logo as an attachment when you paste. Instead, Mail's signature file gets written directly — it takes one pasted command.</p>
           <ol>
-            <li>Click <b>Copy signature</b> above. (Safari or Chrome both work.)</li>
-            <li>In Mail, go to <b>Mail → Settings… → Signatures</b>.</li>
-            <li>In the left column, select your Library email account (not "All Signatures"), then click <b>+</b> and give the signature a name.</li>
-            <li>Click into the editor on the right, delete the default text, and paste (<code>⌘V</code>).</li>
-            <li>Uncheck <b>Always match my default message font</b> so the signature keeps its own styling.</li>
-            <li>At the bottom, set <b>Choose Signature</b> to your new signature, then close the window — Mail saves automatically.</li>
+            <li>In Mail, go to <b>Mail → Settings… → Signatures</b>. Select your Library account in the left column, click <b>+</b>, and name the signature <b>TRPL</b>.</li>
+            <li>In the editor on the right, delete everything and type exactly: <code>TRPLSIG</code></li>
+            <li>Uncheck <b>Always match my default message font</b>. At the bottom, set <b>Choose Signature</b> to <b>TRPL</b>. Close the Settings window.</li>
+            <li><b>Quit Mail</b> completely (<code>⌘Q</code>).</li>
+            <li>Click <b>Copy Apple Mail install command</b> below. Open <b>Terminal</b> (⌘-Space, type "Terminal"), paste, press Return. It should say <i>Done</i>.</li>
+            <li>Open Mail and start a new message — your signature is there.</li>
           </ol>
-          <p class="note">Send yourself a test message. If the logo arrives as an attachment rather than a picture in the body, tell the Communications &amp; Marketing team — there's a fix that involves editing Mail's signature file directly, and it's easier for us to do it once than to walk everyone through it.</p>
+          <div class="toolbar" style="margin-top:8px;"><button id="copymailcmd" type="button" class="secondary">Copy Apple Mail install command</button></div>
+          <p class="note">The command finds the placeholder you typed, swaps in the real signature, and locks the file so Mail won't overwrite it. Mail's Settings preview may show the logo as a blank box (it doesn't load remote images there) — the sent message is correct. To change the signature later, run the command again with a new one.</p>
         </div>
         <div class="panel" data-tab="mobile">
           <p>The Outlook mobile app only supports plain-text signatures — no logo, no links. Use the text version.</p>
@@ -435,6 +437,33 @@ ${buildSignature(d)}
     setTimeout(() => URL.revokeObjectURL(url), 2000);
     say('Downloaded. Follow the Classic Outlook steps below.');
     showPanel('classic');
+  });
+
+  // ---- Apple Mail installer (writes the .mailsignature file directly) ------
+  function toAscii(html) { return html.replace(/[^\x00-\x7F]/g, (c) => '&#' + c.charCodeAt(0) + ';'); }
+  function buildMailSignatureBody(d) {
+    return toAscii(`<html><head><meta http-equiv="content-type" content="text/html; charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;">${buildSignature(d)}</body></html>`);
+  }
+  function buildMailCommand(d) {
+    const b64 = btoa(buildMailSignatureBody(d));
+    return [
+      'f=$(grep -l TRPLSIG ~/Library/Mail/V*/MailData/Signatures/*.mailsignature ~/Library/Mobile\\ Documents/com~apple~mail/Data/V*/Signatures/*.mailsignature 2>/dev/null | head -1);',
+      'if [ -z "$f" ]; then echo "Could not find a signature containing TRPLSIG. Create it in Mail, quit Mail, and try again."; else',
+      'chflags nouchg "$f";',
+      'id=$(grep -m1 "^Message-Id:" "$f");',
+      '{ printf "Content-Transfer-Encoding: 7bit\\nContent-Type: text/html;\\n\\tcharset=us-ascii\\n%s\\nMime-Version: 1.0\\n\\n" "$id"; echo "' + b64 + '" | base64 -D; echo; } > "$f.tmp" && mv "$f.tmp" "$f" && chflags uchg "$f" && echo "Done. Open Mail - your signature is installed.";',
+      'fi'
+    ].join(' ');
+  }
+  $('copymailcmd').addEventListener('click', async () => {
+    const d = readForm();
+    if (!d.name) { say('Fill in your details first.', true); return; }
+    try {
+      await navigator.clipboard.writeText(buildMailCommand(d));
+      say('Install command copied. Quit Mail, then paste it into Terminal.');
+    } catch (e) {
+      say('Couldn’t copy automatically. Try a different browser.', true);
+    }
   });
 
   // ---- Guided chooser + two-device checklist ------------------------------

@@ -245,7 +245,7 @@
           <div class="toolbar" style="margin-top:8px;"><button id="copymailcmd" type="button" class="secondary">Copy Apple Mail install command</button></div>
           <div class="status" id="mailstatus" role="status" aria-live="polite"></div>
           <textarea id="mailcmdbox" class="cmdbox" hidden readonly rows="4" spellcheck="false" aria-label="Apple Mail install command" onclick="this.select()"></textarea>
-          <p class="note">The command finds the placeholder you typed, swaps in the real signature, and locks the file so Mail won't overwrite it. Mail's Settings preview may show the logo as a blank box (it doesn't load remote images there) — the sent message is correct. To change the signature later, run the command again with a new one.</p>
+          <p class="note">The command finds the placeholder you typed, swaps in the real signature, and locks the file so Mail won't overwrite it. Mail's Settings preview may show the logo as a blank box (it doesn't load remote images there) — the sent message is correct. To update it later, quit Mail and run a freshly copied command — it finds the installed signature and replaces it.</p>
         </div>
         <div class="panel" data-tab="mobile">
           <p>The Outlook mobile app only supports plain-text signatures — no logo, no links. Use the text version.</p>
@@ -356,6 +356,11 @@ ${rows}
     );
   }
 
+  // Two blank lines in a neutral font above the block, so typing above the
+  // signature doesn't inherit its serif styling. Used in every output, not the preview.
+  const LEAD = '<div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:18px;color:#000000;"><br><br></div>';
+  function withLead(html) { return LEAD + html; }
+
   function buildPlainText(d) {
     const out = [];
     out.push(d.name);
@@ -373,7 +378,7 @@ ${rows}
     return `<!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>TRPL Signature</title></head>
 <body>
-${buildSignature(d)}
+${withLead(buildSignature(d))}
 </body></html>`;
   }
 
@@ -415,20 +420,23 @@ ${buildSignature(d)}
       await navigator.clipboard.write([item]);
       return;
     }
-    // Fallback: select the preview and copy
+    // Fallback: render the HTML into a temporary node, select it, and copy
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html; tmp.style.position = 'fixed'; tmp.style.left = '-9999px'; tmp.style.top = '0';
+    document.body.appendChild(tmp);
     const range = document.createRange();
-    range.selectNodeContents($('preview'));
+    range.selectNodeContents(tmp);
     const sel = window.getSelection();
     sel.removeAllRanges(); sel.addRange(range);
     const ok = document.execCommand('copy');
-    sel.removeAllRanges();
+    sel.removeAllRanges(); tmp.remove();
     if (!ok) throw new Error('copy failed');
   }
 
   $('copy').addEventListener('click', async () => {
     const d = readForm();
     try {
-      await copyHtml(buildSignature(d), buildPlainText(d));
+      await copyHtml(withLead(buildSignature(d)), '\n\n' + buildPlainText(d));
       say('Copied. Now paste it into your email app — step 3 shows you where.');
     } catch (e) {
       say('Couldn’t copy automatically. Select the preview above, then press Ctrl+C / ⌘C.', true);
@@ -460,13 +468,13 @@ ${buildSignature(d)}
   // ---- Apple Mail installer (writes the .mailsignature file directly) ------
   function toAscii(html) { return html.replace(/[^\x00-\x7F]/g, (c) => '&#' + c.charCodeAt(0) + ';'); }
   function buildMailSignatureBody(d) {
-    return toAscii(`<html><head><meta http-equiv="content-type" content="text/html; charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;">${buildSignature(d)}</body></html>`);
+    return toAscii(`<html><head><meta http-equiv="content-type" content="text/html; charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;">${withLead(buildSignature(d))}</body></html>`);
   }
   function buildMailCommand(d) {
     const b64 = btoa(buildMailSignatureBody(d));
     return [
-      'f=$(grep -l TRPLSIG ~/Library/Mail/V*/MailData/Signatures/*.mailsignature ~/Library/Mobile\\ Documents/com~apple~mail/Data/V*/Signatures/*.mailsignature 2>/dev/null | head -1);',
-      'if [ -z "$f" ]; then echo "Could not find a signature containing TRPLSIG. Create it in Mail, quit Mail, and try again."; else',
+      'f=$(grep -l -e TRPLSIG -e trpl-wordmark.png ~/Library/Mail/V*/MailData/Signatures/*.mailsignature ~/Library/Mobile\\ Documents/com~apple~mail/Data/V*/Signatures/*.mailsignature 2>/dev/null | head -1);',
+      'if [ -z "$f" ]; then echo "Could not find the TRPL signature. In Mail, create a signature containing TRPLSIG, quit Mail, and run this again."; else',
       'chflags nouchg "$f";',
       'id=$(grep -m1 "^Message-Id:" "$f");',
       '{ printf "Content-Transfer-Encoding: 7bit\\nContent-Type: text/html;\\n\\tcharset=us-ascii\\n%s\\nMime-Version: 1.0\\n\\n" "$id"; echo "' + b64 + '" | base64 -D; echo; } > "$f.tmp" && mv "$f.tmp" "$f" && chflags uchg "$f" && echo "Done. Open Mail - your signature is installed.";',

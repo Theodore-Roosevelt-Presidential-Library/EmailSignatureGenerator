@@ -92,6 +92,7 @@
   .panel ol { padding-left: 20px; margin: 8px 0; }
   .panel li { margin: 6px 0; }
   .panel code { background: var(--paper); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .cmdbox { width: 100%; margin-top: 10px; font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); resize: vertical; }
   .note { border-left: 3px solid var(--deep-orange); background: #FFF6F1; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 13px; margin: 12px 0 0; }
   footer { text-align: center; font-size: 12px; color: var(--muted); padding: 20px; }
   footer a { color: var(--dark-forest); }
@@ -242,6 +243,8 @@
             <li>Open Mail and start a new message — your signature is there.</li>
           </ol>
           <div class="toolbar" style="margin-top:8px;"><button id="copymailcmd" type="button" class="secondary">Copy Apple Mail install command</button></div>
+          <div class="status" id="mailstatus" role="status" aria-live="polite"></div>
+          <textarea id="mailcmdbox" class="cmdbox" hidden readonly rows="4" spellcheck="false" aria-label="Apple Mail install command" onclick="this.select()"></textarea>
           <p class="note">The command finds the placeholder you typed, swaps in the real signature, and locks the file so Mail won't overwrite it. Mail's Settings preview may show the logo as a blank box (it doesn't load remote images there) — the sent message is correct. To change the signature later, run the command again with a new one.</p>
         </div>
         <div class="panel" data-tab="mobile">
@@ -376,7 +379,7 @@ ${buildSignature(d)}
 
   // ---- UI wiring -------------------------------------------------------------
   const status = $('status');
-  function say(msg, isErr) { status.textContent = msg; status.className = 'status' + (isErr ? ' err' : ''); }
+  function say(msg, isErr, el) { el = el || status; el.textContent = msg; el.className = 'status' + (isErr ? ' err' : ''); }
 
   function render() {
     const d = readForm();
@@ -388,8 +391,23 @@ ${buildSignature(d)}
   document.querySelectorAll('#form input').forEach((el) => el.addEventListener('input', render));
   render();
 
+  // Copy plain text; falls back to a temporary textarea + execCommand when the
+  // async Clipboard API is unavailable (plain http:// pages, file:// pages, older Safari).
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try { await navigator.clipboard.writeText(text); return; } catch (e) { /* fall through */ }
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '0'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand('copy');
+    ta.remove();
+    if (!ok) throw new Error('copy failed');
+  }
+
   async function copyHtml(html, text) {
-    if (navigator.clipboard && window.ClipboardItem) {
+    if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
       const item = new ClipboardItem({
         'text/html': new Blob([html], { type: 'text/html' }),
         'text/plain': new Blob([text], { type: 'text/plain' })
@@ -419,10 +437,10 @@ ${buildSignature(d)}
 
   $('copytext').addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(buildPlainText(readForm()));
+      await copyText(buildPlainText(readForm()));
       say('Plain-text signature copied.');
     } catch (e) {
-      say('Couldn’t copy automatically. Try a different browser.', true);
+      say('Couldn’t copy automatically. Select the preview text above and press Ctrl+C / ⌘C.', true);
     }
   });
 
@@ -457,13 +475,17 @@ ${buildSignature(d)}
   }
   $('copymailcmd').addEventListener('click', async () => {
     const d = readForm();
-    if (!d.name) { say('Fill in your details first.', true); return; }
+    const ms = $('mailstatus');
+    if (!d.name) { say('Fill in your details in step 1 first.', true, ms); return; }
+    const cmd = buildMailCommand(d);
     try {
-      await navigator.clipboard.writeText(buildMailCommand(d));
-      say('Install command copied. Quit Mail, then paste it into Terminal.');
+      await copyText(cmd);
+      say('Copied. Quit Mail, then paste this into Terminal and press Return.', false, ms);
     } catch (e) {
-      say('Couldn’t copy automatically. Try a different browser.', true);
+      say('Couldn’t copy automatically — copy it from the box below.', true, ms);
     }
+    const box = $('mailcmdbox');
+    box.value = cmd; box.hidden = false;
   });
 
   // ---- Guided chooser + two-device checklist ------------------------------

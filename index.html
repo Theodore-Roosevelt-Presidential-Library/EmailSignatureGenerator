@@ -71,11 +71,24 @@
   .status { font-size: 13px; color: var(--dark-forest); margin-top: 10px; min-height: 18px; }
   .status.err { color: #B23A2A; }
 
-  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin: 0 0 14px; }
-  .tab { background: none; border: none; color: var(--muted); padding: 8px 12px; border-radius: 6px 6px 0 0; font-weight: 600; font-size: 13px; }
-  .tab[aria-selected="true"] { color: var(--night-sky); background: var(--paper); border: 1px solid var(--line); border-bottom-color: var(--paper); margin-bottom: -1px; }
+  .lead { font-size: 14px; color: var(--muted); margin: -6px 0 12px; }
+  .checklist { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); font-weight: 600; font-size: 13px; padding: 8px 14px; }
+  .check .box { width: 16px; height: 16px; border: 2px solid var(--muted); border-radius: 4px; display: inline-block; }
+  .check[data-done="true"] { border-color: var(--dark-forest); color: var(--dark-forest); }
+  .check[data-done="true"] .box { background: var(--dark-forest); border-color: var(--dark-forest); position: relative; }
+  .check[data-done="true"] .box::after { content: ""; position: absolute; left: 4px; top: 0px; width: 4px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .q-text { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  .choices { display: flex; gap: 10px; flex-wrap: wrap; }
+  .choice { background: #fff; color: var(--night-sky); border: 1px solid var(--night-sky); font-weight: 600; font-size: 14px; padding: 12px 16px; }
+  .choice:hover { background: var(--night-sky); color: #fff; }
+  .crumbs { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .crumbs a { color: var(--dark-forest); }
   .panel { display: none; font-size: 14px; }
   .panel[data-active="true"] { display: block; }
+  .done-row { margin-top: 16px; }
+  .next { margin: 12px 0 0; padding: 10px 14px; background: #EEF5EF; border-left: 3px solid var(--bright-forest); border-radius: 0 6px 6px 0; font-size: 14px; }
+  .next a { color: var(--dark-forest); font-weight: 600; }
   .panel ol { padding-left: 20px; margin: 8px 0; }
   .panel li { margin: 6px 0; }
   .panel code { background: var(--paper); border: 1px solid var(--line); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
@@ -139,17 +152,49 @@
       </div>
 
       <div class="card" style="margin-top: 20px;" aria-labelledby="inst-h">
-        <h2 id="inst-h"><span class="step">3</span>Add it to your email app</h2>
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" data-tab="new" aria-selected="true">New Outlook</button>
-          <button class="tab" role="tab" data-tab="classic" aria-selected="false">Classic Outlook (Windows)</button>
-          <button class="tab" role="tab" data-tab="mac" aria-selected="false">Outlook for Mac</button>
-          <button class="tab" role="tab" data-tab="web" aria-selected="false">Outlook on the web</button>
-          <button class="tab" role="tab" data-tab="applemail" aria-selected="false">Apple Mail (Mac)</button>
-          <button class="tab" role="tab" data-tab="mobile" aria-selected="false">Phone</button>
+        <h2 id="inst-h"><span class="step">3</span>Add it to your email apps</h2>
+        <p class="lead">Most people send from two places. Set up both so every message looks the same.</p>
+        <div class="checklist" id="checklist">
+          <button type="button" class="check" data-device="computer"><span class="box"></span>Computer</button>
+          <button type="button" class="check" data-device="phone"><span class="box"></span>Phone</button>
         </div>
 
-        <div class="panel" data-tab="new" data-active="true">
+        <div id="guide">
+          <div class="q" data-q="device">
+            <p class="q-text">Where are you setting this up right now?</p>
+            <div class="choices">
+              <button type="button" class="choice" data-go="computer">💻 My computer</button>
+              <button type="button" class="choice" data-go="phone">📱 My phone</button>
+            </div>
+          </div>
+          <div class="q" data-q="computer" hidden>
+            <p class="q-text">Which app do you read email in?</p>
+            <div class="choices">
+              <button type="button" class="choice" data-go="outlook-win">Outlook on Windows</button>
+              <button type="button" class="choice" data-go="outlook-mac">Outlook on a Mac</button>
+              <button type="button" class="choice" data-show="web">Outlook in a web browser</button>
+              <button type="button" class="choice" data-show="applemail">Apple Mail on a Mac</button>
+            </div>
+          </div>
+          <div class="q" data-q="outlook-win" hidden>
+            <p class="q-text">Look in the top-right corner of Outlook. Is there a <b>“New Outlook”</b> switch, and is it turned on?</p>
+            <div class="choices">
+              <button type="button" class="choice" data-show="new">Yes, it’s on</button>
+              <button type="button" class="choice" data-show="classic">It’s off, or there’s no switch</button>
+            </div>
+          </div>
+          <div class="q" data-q="outlook-mac" hidden>
+            <p class="q-text">Look in the top-right corner of Outlook. Is there a <b>“New Outlook”</b> switch, and is it turned on?</p>
+            <div class="choices">
+              <button type="button" class="choice" data-show="new">Yes, it’s on</button>
+              <button type="button" class="choice" data-show="mac">It’s off, or there’s no switch</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="result" hidden>
+          <div class="crumbs"><span id="crumb"></span> · <a href="#" id="restart">Start over</a></div>
+        <div class="panel" data-tab="new">
           <p>New Outlook (the redesigned app on Windows and Mac, toggle in the top-right corner):</p>
           <ol>
             <li>Click <b>Copy signature</b> above.</li>
@@ -157,9 +202,8 @@
             <li>Click <b>+ New signature</b>, give it a name, and paste (<code>Ctrl+V</code> / <code>⌘V</code>) into the editor.</li>
             <li>Under <b>Select default signatures</b>, choose it for new messages and replies. Click <b>Save</b>.</li>
           </ol>
-          <p class="note">Not sure which Outlook you have? If there's a "New Outlook" switch in the top-right corner and it's <b>on</b>, you're here. If it's off (or there's no switch and you see a File menu), use the <b>Classic Outlook</b> tab.</p>
+          <p class="note">Not sure which Outlook you have? If there's a "New Outlook" switch in the top-right corner and it's <b>on</b>, you're here. If it's off (or there's no switch and you see a File menu), choose <b>Start over</b> and pick “It’s off.”</p>
         </div>
-
         <div class="panel" data-tab="classic">
           <p>Classic Outlook converts pasted logos into attachments, so don't paste — install the file instead:</p>
           <ol>
@@ -170,7 +214,6 @@
           </ol>
           <p class="note">Installed this way, the logo stays a link to the Library's server. Nothing gets attached to your emails.</p>
         </div>
-
         <div class="panel" data-tab="mac">
           <ol>
             <li>Click <b>Copy signature</b> above.</li>
@@ -178,9 +221,8 @@
             <li>Click <b>+</b>, name it, paste (<code>⌘V</code>) into the editor, and close the window to save.</li>
             <li>Under <b>Choose default signature</b>, pick it for new messages and replies.</li>
           </ol>
-          <p class="note">If your Mac Outlook has a "New Outlook" switch turned on, follow the <b>New Outlook</b> tab instead.</p>
+          <p class="note">If your Mac Outlook has a "New Outlook" switch turned on, choose <b>Start over</b> and answer “Yes, it’s on.”</p>
         </div>
-
         <div class="panel" data-tab="web">
           <ol>
             <li>Click <b>Copy signature</b> above.</li>
@@ -189,7 +231,6 @@
             <li>Set it as the default for new messages and replies.</li>
           </ol>
         </div>
-
         <div class="panel" data-tab="applemail">
           <ol>
             <li>Click <b>Copy signature</b> above. (Safari or Chrome both work.)</li>
@@ -201,7 +242,6 @@
           </ol>
           <p class="note">Send yourself a test message. If the logo arrives as an attachment rather than a picture in the body, tell the Communications &amp; Marketing team — there's a fix that involves editing Mail's signature file directly, and it's easier for us to do it once than to walk everyone through it.</p>
         </div>
-
         <div class="panel" data-tab="mobile">
           <p>The Outlook mobile app only supports plain-text signatures — no logo, no links. Use the text version.</p>
           <p><b>Outlook on iPhone / iPad</b></p>
@@ -219,7 +259,11 @@
           <p><b>Apple Mail on iPhone</b>: Settings → Mail → Signature, then paste the plain-text version. (Apple Mail can hold a pasted rich signature, but the logo is unreliable across recipients' apps — plain text is the safe choice.)</p>
           <p class="note">If your signature already appears on your phone, roaming signatures are turned on for the organization and the one you set in New Outlook or Outlook on the web is syncing automatically — nothing to do.</p>
         </div>
-
+          <div class="done-row">
+            <button type="button" id="markdone">✓ Done — I’ve added it here</button>
+          </div>
+          <p class="next" id="next" hidden></p>
+        </div>
       </div>
     </section>
   </div>
@@ -365,7 +409,7 @@ ${buildSignature(d)}
     const d = readForm();
     try {
       await copyHtml(buildSignature(d), buildPlainText(d));
-      say('Copied. Now paste it into your email app — see step 3.');
+      say('Copied. Now paste it into your email app — step 3 shows you where.');
     } catch (e) {
       say('Couldn’t copy automatically. Select the preview above, then press Ctrl+C / ⌘C.', true);
     }
@@ -389,18 +433,74 @@ ${buildSignature(d)}
     a.href = url; a.download = `TRPL Signature - ${safe}.htm`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
-    say('Downloaded. Follow the Classic Outlook steps in step 3.');
-    activate('classic');
+    say('Downloaded. Follow the Classic Outlook steps below.');
+    showPanel('classic');
   });
 
-  // Tabs
-  function activate(name) {
-    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === name)));
-    document.querySelectorAll('.panel').forEach((p) => p.dataset.active = String(p.dataset.tab === name));
-    try { localStorage.setItem('sigtab', name); } catch (e) {}
+  // ---- Guided chooser + two-device checklist ------------------------------
+  const PANEL_META = {
+    new:       { device: 'computer', label: 'Computer › New Outlook' },
+    classic:   { device: 'computer', label: 'Computer › Classic Outlook (Windows)' },
+    mac:       { device: 'computer', label: 'Computer › Outlook for Mac' },
+    web:       { device: 'computer', label: 'Computer › Outlook on the web' },
+    applemail: { device: 'computer', label: 'Computer › Apple Mail' },
+    mobile:    { device: 'phone',    label: 'Phone › Outlook app' }
+  };
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  let current = null;
+
+  function showQuestion(name) {
+    document.querySelectorAll('.q').forEach((q) => q.hidden = q.dataset.q !== name);
+    $('guide').hidden = false; $('result').hidden = true;
   }
-  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => activate(t.dataset.tab)));
-  try { const saved = localStorage.getItem('sigtab'); if (saved) activate(saved); } catch (e) {}
+  function showPanel(name) {
+    current = name;
+    document.querySelectorAll('.panel').forEach((p) => p.dataset.active = String(p.dataset.tab === name));
+    $('crumb').textContent = PANEL_META[name].label;
+    $('guide').hidden = true; $('result').hidden = false;
+    $('next').hidden = true;
+    $('markdone').disabled = false;
+  }
+  function refreshChecklist() {
+    document.querySelectorAll('.check').forEach((c) => c.dataset.done = String(store.get('sig-done-' + c.dataset.device) === '1'));
+  }
+  function goDevice(device) {
+    if (device === 'phone') showPanel('mobile'); else showQuestion('computer');
+  }
+
+  document.querySelectorAll('.choice').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.show) showPanel(b.dataset.show);
+    else if (b.dataset.go === 'computer' || b.dataset.go === 'phone') goDevice(b.dataset.go);
+    else showQuestion(b.dataset.go);
+  }));
+  document.querySelectorAll('.check').forEach((c) => c.addEventListener('click', () => goDevice(c.dataset.device)));
+  $('restart').addEventListener('click', (e) => { e.preventDefault(); showQuestion('device'); });
+
+  $('markdone').addEventListener('click', () => {
+    const device = PANEL_META[current].device;
+    store.set('sig-done-' + device, '1');
+    refreshChecklist();
+    const other = device === 'computer' ? 'phone' : 'computer';
+    const otherDone = store.get('sig-done-' + other) === '1';
+    const n = $('next');
+    n.hidden = false;
+    if (otherDone) {
+      n.innerHTML = 'You’re all set — computer and phone both done. Send yourself a test message from each to be sure.';
+    } else if (other === 'phone') {
+      n.innerHTML = 'Nice. Now do your <a href="#" data-go="phone">phone</a> — it takes a minute, and it means your replies on the go match.';
+    } else {
+      n.innerHTML = 'Nice. Now do your <a href="#" data-go="computer">computer</a> — that’s where the full signature with the logo lives.';
+    }
+    const link = n.querySelector('a');
+    if (link) link.addEventListener('click', (e) => { e.preventDefault(); goDevice(link.dataset.go); });
+    $('markdone').disabled = true;
+  });
+
+  refreshChecklist();
+  showQuestion('device');
 })();
 </script>
 </body>
